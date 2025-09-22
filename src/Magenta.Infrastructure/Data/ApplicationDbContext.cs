@@ -15,52 +15,16 @@ public class ApplicationDbContext : IdentityDbContext<User>
     {
         base.OnModelCreating(builder);
 
+        // Configure User entity with custom properties only
         builder.Entity<User>(entity =>
         {
-            entity.ToTable("Users");
-            entity.HasIndex(e => e.UserName)
-                .IsUnique()
-                .HasDatabaseName("IX_Users_UserName");
-
-            entity.HasIndex(e => e.Email)
-                .IsUnique()
-                .HasDatabaseName("IX_Users_Email");
-
+            // Configure CreatedAt with default value
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+            // Configure UpdatedAt as nullable
             entity.Property(e => e.UpdatedAt)
                 .IsRequired(false);
-        });
-
-        builder.Entity<Microsoft.AspNetCore.Identity.IdentityRole>(entity =>
-        {
-            entity.ToTable("Roles");
-        });
-
-        builder.Entity<Microsoft.AspNetCore.Identity.IdentityUserRole<string>>(entity =>
-        {
-            entity.ToTable("UserRoles");
-        });
-
-        builder.Entity<Microsoft.AspNetCore.Identity.IdentityUserClaim<string>>(entity =>
-        {
-            entity.ToTable("UserClaims");
-        });
-
-        builder.Entity<Microsoft.AspNetCore.Identity.IdentityUserLogin<string>>(entity =>
-        {
-            entity.ToTable("UserLogins");
-        });
-
-        builder.Entity<Microsoft.AspNetCore.Identity.IdentityUserToken<string>>(entity =>
-        {
-            entity.ToTable("UserTokens");
-        });
-
-        builder.Entity<Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>>(entity =>
-        {
-            entity.ToTable("RoleClaims");
         });
     }
 }

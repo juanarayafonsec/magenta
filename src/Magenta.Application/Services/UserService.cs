@@ -43,7 +43,7 @@ public class UserService : IUserService
         {
             UserName = request.Username,
             Email = request.Email,
-            EmailConfirmed = false, // Email confirmation can be implemented later
+            EmailConfirmed = true, // No email confirmation required
             CreatedAt = DateTime.UtcNow
         };
 
