@@ -1,7 +1,6 @@
-// File: test/Magenta.Registration.Application.Tests/Services/UserServiceTests.cs
-
 using Magenta.Registration.Application.DTOs;
 using Magenta.Registration.Application.Services;
+using Magenta.Registration.Application.Interfaces;
 using Magenta.Registration.Domain.Entities;
 using Magenta.Registration.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -18,13 +17,15 @@ public class UserServiceTests
 {
     private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly Mock<IPasswordHasher<User>> _mockPasswordHasher;
+    private readonly Mock<IEventPublisher> _mockEventPublisher;
     private readonly UserService _userService;
 
     public UserServiceTests()
     {
         _mockUserRepository = new Mock<IUserRepository>();
         _mockPasswordHasher = new Mock<IPasswordHasher<User>>();
-        _userService = new UserService(_mockUserRepository.Object, _mockPasswordHasher.Object);
+        _mockEventPublisher = new Mock<IEventPublisher>();
+        _userService = new UserService(_mockUserRepository.Object, _mockPasswordHasher.Object, _mockEventPublisher.Object);
     }
 
     [Fact]

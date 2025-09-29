@@ -1,5 +1,3 @@
-// File: src/Magenta.Registration.Domain/Entities/User.cs
-
 using Microsoft.AspNetCore.Identity;
 
 namespace Magenta.Registration.Domain.Entities;

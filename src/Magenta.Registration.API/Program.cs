@@ -1,7 +1,6 @@
-// File: src/Magenta.Registration.API/Program.cs
-
 using Magenta.Registration.Infrastructure.Data;
 using Magenta.Registration.Infrastructure.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,11 +66,33 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Ensure database is created
+// Ensure database is created and migrations are applied
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.EnsureCreated();
+    try
+    {
+        // Use EnsureCreated for development, or Migrate for production
+        if (app.Environment.IsDevelopment())
+        {
+            context.Database.EnsureCreated();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Registration database tables created successfully.");
+        }
+        else
+        {
+            // In production, use migrations
+            context.Database.Migrate();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Registration database migrations applied successfully.");
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Failed to initialize registration database: {ErrorMessage}", ex.Message);
+        throw;
+    }
 }
 
 app.Run();

@@ -1,5 +1,3 @@
-// File: src/Magenta.Registration.Application/DTOs/RegisterUserResponse.cs
-
 namespace Magenta.Registration.Application.DTOs;
 
 /// <summary>

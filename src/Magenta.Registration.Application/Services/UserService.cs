@@ -1,10 +1,10 @@
-// File: src/Magenta.Registration.Application/Services/UserService.cs
-
 using Magenta.Registration.Application.DTOs;
 using Magenta.Registration.Application.Interfaces;
+using Magenta.Registration.Application.Events;
 using Magenta.Registration.Domain.Entities;
 using Magenta.Registration.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Magenta.Authentication.Infrastructure.Services;
 
 namespace Magenta.Registration.Application.Services;
 
@@ -16,16 +16,19 @@ public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly IEventPublisher _eventPublisher;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UserService"/> class.
     /// </summary>
     /// <param name="userRepository">The user repository.</param>
     /// <param name="passwordHasher">The password hasher.</param>
-    public UserService(IUserRepository userRepository, IPasswordHasher<User> passwordHasher)
+    /// <param name="eventPublisher">The event publisher.</param>
+    public UserService(IUserRepository userRepository, IPasswordHasher<User> passwordHasher, IEventPublisher eventPublisher)
     {
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
+        _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
     }
 
     /// <summary>
@@ -72,6 +75,31 @@ public class UserService : IUserService
 
         if (result.Succeeded)
         {
+            // Publish user created event
+            var userCreatedEvent = new UserCreatedEvent
+            {
+                UserId = user.Id,
+                Username = user.UserName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                CreatedAt = user.CreatedAt,
+                PasswordHash = user.PasswordHash ?? string.Empty,
+                SecurityStamp = user.SecurityStamp ?? string.Empty,
+                EmailConfirmed = user.EmailConfirmed,
+                LockoutEnabled = user.LockoutEnabled,
+                LockoutEnd = user.LockoutEnd
+            };
+
+            try
+            {
+                await _eventPublisher.PublishAsync(userCreatedEvent, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't fail the registration
+                // In a production system, you might want to implement retry logic or dead letter queues
+                Console.WriteLine($"Failed to publish UserCreatedEvent: {ex.Message}");
+            }
+
             return RegisterUserResponse.SuccessResponse(user.Id, user.UserName, user.Email);
         }
 

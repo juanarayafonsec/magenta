@@ -2,23 +2,22 @@ using Magenta.Registration.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Magenta.Registration.Infrastructure.Data;
+namespace Magenta.Authentication.Infrastructure.Data;
 
 /// <summary>
-/// Application database context that extends IdentityDbContext to support ASP.NET Core Identity.
-/// Manages database operations for the application.
+/// Authentication database context that extends IdentityDbContext.
+/// Manages database operations for authentication using cookie-based sessions.
 /// </summary>
-public class ApplicationDbContext : IdentityDbContext<User>
+public class AuthenticationDbContext : IdentityDbContext<User>
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="ApplicationDbContext"/> class.
+    /// Initializes a new instance of the <see cref="AuthenticationDbContext"/> class.
     /// </summary>
     /// <param name="options">The database context options.</param>
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    public AuthenticationDbContext(DbContextOptions<AuthenticationDbContext> options)
         : base(options)
     {
     }
-
 
     /// <summary>
     /// Configures the model for the database context.
@@ -39,6 +38,5 @@ public class ApplicationDbContext : IdentityDbContext<User>
             entity.Property(e => e.UpdatedAt)
                 .IsRequired(false);
         });
-
     }
 }

@@ -1,5 +1,3 @@
-// File: test/Magenta.Application.Tests/Services/UserServiceTests.cs
-
 using Magenta.Application.DTOs;
 using Magenta.Application.Services;
 using Magenta.Domain.Entities;

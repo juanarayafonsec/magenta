@@ -1,5 +1,3 @@
-// File: src/Magenta.Registration.Application/Interfaces/IUserService.cs
-
 using Magenta.Registration.Application.DTOs;
 
 namespace Magenta.Registration.Application.Interfaces;

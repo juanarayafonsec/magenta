@@ -10,13 +10,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Magenta.Registration.Application\Magenta.Registration.Application.csproj" />
-    <ProjectReference Include="..\Magenta.Registration.Infrastructure\Magenta.Registration.Infrastructure.csproj" />
+    <ProjectReference Include="..\Magenta.Authentication.Application\Magenta.Authentication.Application.csproj" />
+    <ProjectReference Include="..\Magenta.Authentication.Infrastructure\Magenta.Authentication.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

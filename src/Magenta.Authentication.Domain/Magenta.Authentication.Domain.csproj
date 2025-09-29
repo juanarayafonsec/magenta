@@ -7,7 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Magenta.Authentication.Infrastructure\Magenta.Authentication.Infrastructure.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Magenta.Registration.Domain\Magenta.Registration.Domain.csproj" />
   </ItemGroup>
 

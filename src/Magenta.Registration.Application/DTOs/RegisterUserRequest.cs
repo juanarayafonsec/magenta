@@ -1,5 +1,3 @@
-// File: src/Magenta.Registration.Application/DTOs/RegisterUserRequest.cs
-
 using System.ComponentModel.DataAnnotations;
 
 namespace Magenta.Registration.Application.DTOs;

@@ -1,5 +1,3 @@
-// File: src/Magenta.Registration.Infrastructure/Repositories/UserRepository.cs
-
 using Magenta.Registration.Domain.Entities;
 using Magenta.Registration.Domain.Interfaces;
 using Magenta.Registration.Infrastructure.Data;

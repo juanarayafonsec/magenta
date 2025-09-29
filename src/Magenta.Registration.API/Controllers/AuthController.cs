@@ -1,33 +1,15 @@
-// File: src/Magenta.Registration.API/Controllers/AuthController.cs
-
 using Magenta.Registration.Application.DTOs;
 using Magenta.Registration.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Magenta.Registration.API.Controllers;
 
-/// <summary>
-/// Controller for authentication-related operations.
-/// Handles user registration and other auth endpoints.
-/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
-public class AuthController : ControllerBase
+public class AuthController(IUserService userService, ILogger<AuthController> logger) : ControllerBase
 {
-    private readonly IUserService _userService;
-    private readonly ILogger<AuthController> _logger;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AuthController"/> class.
-    /// </summary>
-    /// <param name="userService">The user service.</param>
-    /// <param name="logger">The logger.</param>
-    public AuthController(IUserService userService, ILogger<AuthController> logger)
-    {
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+   
 
     /// <summary>
     /// Registers a new user.
@@ -48,7 +30,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("Registration attempt for username: {Username}", request.Username);
+            logger.LogInformation("Registration attempt for username: {Username}", request.Username);
 
             // Validate model state
             if (!ModelState.IsValid)
@@ -58,32 +40,32 @@ public class AuthController : ControllerBase
                     .Select(e => e.ErrorMessage)
                     .ToList();
 
-                _logger.LogWarning("Validation failed for registration request: {Errors}", string.Join(", ", errors));
+                logger.LogWarning("Validation failed for registration request: {Errors}", string.Join(", ", errors));
                 return BadRequest(RegisterUserResponse.FailureResponse(errors));
             }
 
             // Attempt to register user
-            var result = await _userService.RegisterUserAsync(request, cancellationToken);
+            var result = await userService.RegisterUserAsync(request, cancellationToken);
 
             if (result.Success)
             {
-                _logger.LogInformation("User registered successfully: {Username}", request.Username);
+                logger.LogInformation("User registered successfully: {Username}", request.Username);
                 return Ok(result);
             }
 
             // Check if it's a conflict (username/email already exists)
             if (result.Errors.Any(e => e.Contains("already") || e.Contains("taken") || e.Contains("registered")))
             {
-                _logger.LogWarning("Registration failed due to conflict: {Errors}", string.Join(", ", result.Errors));
+                logger.LogWarning("Registration failed due to conflict: {Errors}", string.Join(", ", result.Errors));
                 return Conflict(result);
             }
 
-            _logger.LogWarning("Registration failed: {Errors}", string.Join(", ", result.Errors));
+            logger.LogWarning("Registration failed: {Errors}", string.Join(", ", result.Errors));
             return BadRequest(result);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred during user registration for username: {Username}", request.Username);
+            logger.LogError(ex, "An error occurred during user registration for username: {Username}", request.Username);
             return StatusCode(StatusCodes.Status500InternalServerError, "An internal server error occurred.");
         }
     }
