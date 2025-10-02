@@ -1,15 +1,13 @@
+using Magenta.Infrastructure.Configuration;
 using Magenta.Registration.Application.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 
 namespace Magenta.Registration.Infrastructure.Services;
 
-/// <summary>
-/// RabbitMQ implementation of the event publisher.
-/// </summary>
 public class RabbitMQEventPublisher : IEventPublisher, IDisposable
 {
     private readonly IConnection _connection;
@@ -17,26 +15,32 @@ public class RabbitMQEventPublisher : IEventPublisher, IDisposable
     private readonly ILogger<RabbitMQEventPublisher> _logger;
     private readonly string _exchangeName;
 
-    public RabbitMQEventPublisher(IConfiguration configuration, ILogger<RabbitMQEventPublisher> logger)
+    public RabbitMQEventPublisher(IOptions<RabbitMQConfiguration> rabbitMqOptions, ILogger<RabbitMQEventPublisher> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         
-        var rabbitMqHost = configuration["RabbitMQ:Host"] ?? "localhost";
-        var rabbitMqPort = configuration.GetValue<int>("RabbitMQ:Port", 5672);
-        var rabbitMqUsername = configuration["RabbitMQ:Username"] ?? "guest";
-        var rabbitMqPassword = configuration["RabbitMQ:Password"] ?? "guest";
-        _exchangeName = configuration["RabbitMQ:ExchangeName"] ?? "magenta.events";
+        var config = rabbitMqOptions.Value;
+        
+        // Validate configuration
+        var validationErrors = config.Validate();
+        if (validationErrors.Any())
+        {
+            var errorMessage = string.Join(", ", validationErrors);
+            throw new InvalidOperationException($"Invalid RabbitMQ configuration: {errorMessage}");
+        }
+
+        _exchangeName = config.ExchangeName;
 
         // Create connection factory
         var factory = new ConnectionFactory
         {
-            HostName = rabbitMqHost,
-            Port = rabbitMqPort,
-            UserName = rabbitMqUsername,
-            Password = rabbitMqPassword,
-            VirtualHost = "/",
-            AutomaticRecoveryEnabled = true,
-            NetworkRecoveryInterval = TimeSpan.FromSeconds(10)
+            HostName = config.Host,
+            Port = config.Port,
+            UserName = config.Username,
+            Password = config.Password,
+            VirtualHost = config.VirtualHost,
+            AutomaticRecoveryEnabled = config.AutomaticRecoveryEnabled,
+            NetworkRecoveryInterval = TimeSpan.FromSeconds(config.NetworkRecoveryIntervalSeconds)
         };
 
         try
@@ -51,11 +55,11 @@ public class RabbitMQEventPublisher : IEventPublisher, IDisposable
                 durable: true,
                 autoDelete: false);
 
-            _logger.LogInformation("Connected to RabbitMQ at {Host}:{Port}", rabbitMqHost, rabbitMqPort);
+            _logger.LogInformation("Connected to RabbitMQ at {Host}:{Port}", config.Host, config.Port);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to connect to RabbitMQ at {Host}:{Port}", rabbitMqHost, rabbitMqPort);
+            _logger.LogError(ex, "Failed to connect to RabbitMQ at {Host}:{Port}", config.Host, config.Port);
             throw;
         }
     }

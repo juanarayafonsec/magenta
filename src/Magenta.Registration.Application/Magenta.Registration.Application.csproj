@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Magenta.Authentication.Infrastructure\Magenta.Authentication.Infrastructure.csproj" />
     <ProjectReference Include="..\Magenta.Registration.Domain\Magenta.Registration.Domain.csproj" />
   </ItemGroup>
 

@@ -1,35 +1,27 @@
 using Magenta.Authentication.Application.DTOs;
-using Magenta.Authentication.Application.Interfaces;
+using Magenta.Authentication.Domain.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Magenta.Registration.Domain.Entities;
 using System.Security.Claims;
 
 namespace Magenta.Authentication.API.Controllers;
 
-/// <summary>
-/// Controller for authentication and authorization operations.
-/// Handles login, logout, token refresh, and user profile endpoints.
-/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
+    private readonly UserManager<AuthenticationUser> _userManager;
+    private readonly SignInManager<AuthenticationUser> _signInManager;
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
-        IAuthService authService, 
-        UserManager<User> userManager,
-        SignInManager<User> signInManager,
+        UserManager<AuthenticationUser> userManager,
+        SignInManager<AuthenticationUser> signInManager,
         ILogger<AuthController> logger)
     {
-        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -68,7 +60,7 @@ public class AuthController : ControllerBase
             }
 
             // Find user by username or email
-            var user = await _userManager.FindByNameAsync(request.UsernameOrEmail) 
+            var user = await _userManager.FindByNameAsync(request.UsernameOrEmail)
                        ?? await _userManager.FindByEmailAsync(request.UsernameOrEmail);
 
             if (user == null)
@@ -116,7 +108,6 @@ public class AuthController : ControllerBase
                 // Return success response
                 var userInfo = new UserInfo
                 {
-                    Id = user.Id,
                     Username = user.UserName ?? "",
                     Email = user.Email ?? "",
                     CreatedAt = user.CreatedAt
@@ -158,7 +149,6 @@ public class AuthController : ControllerBase
         {
             if (User.Identity?.IsAuthenticated == true)
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var username = User.FindFirst(ClaimTypes.Name)?.Value;
                 var email = User.FindFirst(ClaimTypes.Email)?.Value;
                 var loginTime = User.FindFirst("LoginTime")?.Value;
@@ -166,7 +156,6 @@ public class AuthController : ControllerBase
                 return Ok(new
                 {
                     IsAuthenticated = true,
-                    UserId = userId,
                     Username = username,
                     Email = email,
                     LoginTime = loginTime,
@@ -197,7 +186,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("Logout attempt for user {UserId}", User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            _logger.LogInformation("Logout attempt");
 
             // Sign out the user from cookie authentication
             await HttpContext.SignOutAsync("CookieAuth");
@@ -217,76 +206,5 @@ public class AuthController : ControllerBase
             _logger.LogError(ex, "An error occurred during logout");
             return StatusCode(StatusCodes.Status500InternalServerError, "An internal server error occurred.");
         }
-    }
-
-    /// <summary>
-    /// Gets the current user's profile information and claims.
-    /// </summary>
-    /// <returns>The user profile information and claims.</returns>
-    /// <response code="200">User profile retrieved successfully.</response>
-    /// <response code="401">User not authenticated.</response>
-    /// <response code="404">User not found.</response>
-    /// <response code="500">Internal server error.</response>
-    [HttpGet("me")]
-    [Authorize]
-    [ProducesResponseType(typeof(MeResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(MeResponse), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetMe()
-    {
-        try
-        {
-            // Get user ID from claims
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
-            {
-                _logger.LogWarning("User ID not found in claims");
-                return Unauthorized("User not authenticated.");
-            }
-
-            _logger.LogInformation("Get user profile for {UserId}", userId);
-
-            // Get user profile
-            var result = await _authService.GetUserProfileAsync(userId);
-
-            if (result.Success)
-            {
-                _logger.LogInformation("User profile retrieved for {UserId}", userId);
-                return Ok(result);
-            }
-
-            _logger.LogWarning("User profile not found for {UserId}", userId);
-            return NotFound(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while getting user profile");
-            return StatusCode(StatusCodes.Status500InternalServerError, "An internal server error occurred.");
-        }
-    }
-
-    /// <summary>
-    /// Gets the client IP address from the request.
-    /// </summary>
-    /// <returns>The client IP address.</returns>
-    private string? GetClientIpAddress()
-    {
-        // Check for forwarded IP first (for load balancers/proxies)
-        var forwardedFor = Request.Headers["X-Forwarded-For"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(forwardedFor))
-        {
-            return forwardedFor.Split(',')[0].Trim();
-        }
-
-        // Check for real IP header
-        var realIp = Request.Headers["X-Real-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(realIp))
-        {
-            return realIp;
-        }
-
-        // Fall back to connection remote IP
-        return HttpContext.Connection.RemoteIpAddress?.ToString();
     }
 }

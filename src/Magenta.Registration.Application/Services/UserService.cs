@@ -2,28 +2,16 @@ using Magenta.Registration.Application.DTOs;
 using Magenta.Registration.Application.Interfaces;
 using Magenta.Registration.Application.Events;
 using Magenta.Registration.Domain.Entities;
-using Magenta.Registration.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Magenta.Authentication.Infrastructure.Services;
 
 namespace Magenta.Registration.Application.Services;
 
-/// <summary>
-/// Service implementation for user-related operations.
-/// Handles user registration business logic and validation.
-/// </summary>
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IEventPublisher _eventPublisher;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UserService"/> class.
-    /// </summary>
-    /// <param name="userRepository">The user repository.</param>
-    /// <param name="passwordHasher">The password hasher.</param>
-    /// <param name="eventPublisher">The event publisher.</param>
     public UserService(IUserRepository userRepository, IPasswordHasher<User> passwordHasher, IEventPublisher eventPublisher)
     {
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
@@ -31,12 +19,6 @@ public class UserService : IUserService
         _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
     }
 
-    /// <summary>
-    /// Registers a new user asynchronously.
-    /// </summary>
-    /// <param name="request">The registration request containing user details.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the registration response.</returns>
     public async Task<RegisterUserResponse> RegisterUserAsync(RegisterUserRequest request, CancellationToken cancellationToken = default)
     {
         // Validate input
@@ -108,11 +90,6 @@ public class UserService : IUserService
         return RegisterUserResponse.FailureResponse(errors);
     }
 
-    /// <summary>
-    /// Validates the registration request.
-    /// </summary>
-    /// <param name="request">The registration request to validate.</param>
-    /// <returns>A list of validation errors.</returns>
     private static List<string> ValidateRegistrationRequest(RegisterUserRequest request)
     {
         var errors = new List<string>();
@@ -164,11 +141,6 @@ public class UserService : IUserService
         return errors;
     }
 
-    /// <summary>
-    /// Validates email format using a simple regex pattern.
-    /// </summary>
-    /// <param name="email">The email to validate.</param>
-    /// <returns>True if the email format is valid, otherwise false.</returns>
     private static bool IsValidEmail(string email)
     {
         try

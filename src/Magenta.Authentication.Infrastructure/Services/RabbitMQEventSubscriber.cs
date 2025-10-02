@@ -1,13 +1,12 @@
 using Magenta.Authentication.Application.Interfaces;
-using Magenta.Authentication.Infrastructure.Data;
+using Magenta.Authentication.Domain.Entities;
 using Magenta.Authentication.Infrastructure.Events;
-using Magenta.Registration.Domain.Entities;
+using Magenta.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
@@ -15,9 +14,6 @@ using System.Text.Json;
 
 namespace Magenta.Authentication.Infrastructure.Services;
 
-/// <summary>
-/// RabbitMQ implementation of the event subscriber.
-/// </summary>
 public class RabbitMQEventSubscriber : IEventSubscriber, IHostedService, IDisposable
 {
     private readonly IConnection _connection;
@@ -28,30 +24,35 @@ public class RabbitMQEventSubscriber : IEventSubscriber, IHostedService, IDispos
     private readonly string _queueName;
 
     public RabbitMQEventSubscriber(
-        IConfiguration configuration,
+        IOptions<RabbitMQConfiguration> rabbitMqOptions,
         ILogger<RabbitMQEventSubscriber> logger,
         IServiceProvider serviceProvider)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         
-        var rabbitMqHost = configuration["RabbitMQ:Host"] ?? "localhost";
-        var rabbitMqPort = configuration.GetValue<int>("RabbitMQ:Port", 5672);
-        var rabbitMqUsername = configuration["RabbitMQ:Username"] ?? "guest";
-        var rabbitMqPassword = configuration["RabbitMQ:Password"] ?? "guest";
-        _exchangeName = configuration["RabbitMQ:ExchangeName"] ?? "magenta.events";
-        _queueName = configuration["RabbitMQ:QueueName"] ?? "authentication.user.events";
+        var config = rabbitMqOptions.Value;
+        
+        // Validate configuration
+        var validationErrors = config.Validate();
+        if (validationErrors.Any())
+        {
+            var errorMessage = string.Join(", ", validationErrors);
+            throw new InvalidOperationException($"Invalid RabbitMQ configuration: {errorMessage}");
+        }
 
-        // Create connection factory
+        _exchangeName = config.ExchangeName;
+        _queueName = config.QueueName ?? "authentication.user.events";
+
         var factory = new ConnectionFactory
         {
-            HostName = rabbitMqHost,
-            Port = rabbitMqPort,
-            UserName = rabbitMqUsername,
-            Password = rabbitMqPassword,
-            VirtualHost = "/",
-            AutomaticRecoveryEnabled = true,
-            NetworkRecoveryInterval = TimeSpan.FromSeconds(10)
+            HostName = config.Host,
+            Port = config.Port,
+            UserName = config.Username,
+            Password = config.Password,
+            VirtualHost = config.VirtualHost,
+            AutomaticRecoveryEnabled = config.AutomaticRecoveryEnabled,
+            NetworkRecoveryInterval = TimeSpan.FromSeconds(config.NetworkRecoveryIntervalSeconds)
         };
 
         try
@@ -92,11 +93,11 @@ public class RabbitMQEventSubscriber : IEventSubscriber, IHostedService, IDispos
             // Set QoS to process one message at a time
             _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
 
-            _logger.LogInformation("Connected to RabbitMQ at {Host}:{Port} for event subscription", rabbitMqHost, rabbitMqPort);
+            _logger.LogInformation("Connected to RabbitMQ at {Host}:{Port} for event subscription", config.Host, config.Port);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to connect to RabbitMQ at {Host}:{Port}", rabbitMqHost, rabbitMqPort);
+            _logger.LogError(ex, "Failed to connect to RabbitMQ at {Host}:{Port}", config.Host, config.Port);
             throw;
         }
     }
@@ -198,7 +199,7 @@ public class RabbitMQEventSubscriber : IEventSubscriber, IHostedService, IDispos
     private async Task HandleUserCreatedEventAsync(string message)
     {
         using var scope = _serviceProvider.CreateScope();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AuthenticationUser>>();
         
         try
         {
@@ -223,8 +224,8 @@ public class RabbitMQEventSubscriber : IEventSubscriber, IHostedService, IDispos
                 return;
             }
 
-            // Create user in Authentication service
-            var user = new User
+                   // Create user in Authentication service
+                   var user = new AuthenticationUser
             {
                 Id = userCreatedEvent.UserId,
                 UserName = userCreatedEvent.Username,
@@ -262,7 +263,7 @@ public class RabbitMQEventSubscriber : IEventSubscriber, IHostedService, IDispos
     private async Task HandleUserUpdatedEventAsync(string message)
     {
         using var scope = _serviceProvider.CreateScope();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AuthenticationUser>>();
         
         try
         {
@@ -369,7 +370,7 @@ public class RabbitMQEventSubscriber : IEventSubscriber, IHostedService, IDispos
     private async Task HandleUserDeletedEventAsync(string message)
     {
         using var scope = _serviceProvider.CreateScope();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AuthenticationUser>>();
         
         try
         {

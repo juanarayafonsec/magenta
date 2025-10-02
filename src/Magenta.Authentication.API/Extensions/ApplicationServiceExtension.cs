@@ -1,4 +1,4 @@
-﻿using Magenta.Authentication.Infrastructure.Extensions;
+using Magenta.Authentication.Infrastructure.Extensions;
 
 namespace Magenta.Authentication.API.Extensions;
 public static class ApplicationServiceExtension

@@ -2,7 +2,6 @@ using Magenta.Registration.Application.DTOs;
 using Magenta.Registration.Application.Services;
 using Magenta.Registration.Application.Interfaces;
 using Magenta.Registration.Domain.Entities;
-using Magenta.Registration.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using Xunit;

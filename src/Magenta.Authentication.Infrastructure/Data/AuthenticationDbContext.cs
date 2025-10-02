@@ -1,4 +1,4 @@
-using Magenta.Registration.Domain.Entities;
+using Magenta.Authentication.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +8,7 @@ namespace Magenta.Authentication.Infrastructure.Data;
 /// Authentication database context that extends IdentityDbContext.
 /// Manages database operations for authentication using cookie-based sessions.
 /// </summary>
-public class AuthenticationDbContext : IdentityDbContext<User>
+public class AuthenticationDbContext : IdentityDbContext<AuthenticationUser>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="AuthenticationDbContext"/> class.
@@ -27,8 +27,8 @@ public class AuthenticationDbContext : IdentityDbContext<User>
     {
         base.OnModelCreating(builder);
 
-        // Configure User entity with custom properties
-        builder.Entity<User>(entity =>
+               // Configure AuthenticationUser entity with custom properties
+               builder.Entity<AuthenticationUser>(entity =>
         {
             // Configure CreatedAt with default value
             entity.Property(e => e.CreatedAt)

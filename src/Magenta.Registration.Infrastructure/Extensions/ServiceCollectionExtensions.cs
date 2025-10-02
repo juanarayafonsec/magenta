@@ -1,7 +1,7 @@
+using Magenta.Infrastructure.Configuration;
 using Magenta.Registration.Application.Interfaces;
 using Magenta.Registration.Application.Services;
 using Magenta.Registration.Domain.Entities;
-using Magenta.Registration.Domain.Interfaces;
 using Magenta.Registration.Infrastructure.Data;
 using Magenta.Registration.Infrastructure.Repositories;
 using Magenta.Registration.Infrastructure.Services;
@@ -12,17 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Magenta.Registration.Infrastructure.Extensions;
 
-/// <summary>
-/// Extension methods for configuring services in the Infrastructure layer.
-/// </summary>
 public static class ServiceCollectionExtensions
 {
-    /// <summary>
-    /// Adds infrastructure services to the service collection.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="configuration">The configuration.</param>
-    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         // Add database context
@@ -57,6 +48,9 @@ public static class ServiceCollectionExtensions
 
         // Add repositories
         services.AddScoped<IUserRepository, UserRepository>();
+
+        // Configure RabbitMQ options
+        services.Configure<RabbitMQConfiguration>(options => configuration.GetSection("RabbitMQ").Bind(options));
 
         // Add event publishing services
         services.AddSingleton<IEventPublisher, RabbitMQEventPublisher>();

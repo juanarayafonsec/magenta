@@ -1,8 +1,8 @@
 using Magenta.Authentication.Application.Interfaces;
-using Magenta.Authentication.Application.Services;
+using Magenta.Authentication.Domain.Entities;
 using Magenta.Authentication.Infrastructure.Data;
 using Magenta.Authentication.Infrastructure.Services;
-using Magenta.Registration.Domain.Entities;
+using Magenta.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -30,8 +30,8 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<AuthenticationDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-        // Add Identity services with enhanced security settings
-        services.AddIdentity<User, IdentityRole>(options =>
+               // Add Identity services with enhanced security settings
+               services.AddIdentity<AuthenticationUser, IdentityRole>(options =>
         {
             // Enhanced password settings for security
             options.Password.RequireDigit = true;
@@ -119,12 +119,12 @@ public static class ServiceCollectionExtensions
             //     policy.RequireClaim(ClaimTypes.Role, "Admin"));
         });
 
+        // Configure RabbitMQ options
+        services.Configure<RabbitMQConfiguration>(configuration.GetSection("RabbitMQ"));
+
         // Add event subscription services
         services.AddSingleton<IEventSubscriber, RabbitMQEventSubscriber>();
         services.AddHostedService<RabbitMQEventSubscriber>();
-
-        // Add application services
-        services.AddScoped<IAuthService, AuthService>();
 
         return services;
     }
