@@ -1,4 +1,4 @@
-using Magenta.Infrastructure.Configuration;
+using Magenta.Registration.Infrastructure.Configuration;
 using Magenta.Registration.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

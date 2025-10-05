@@ -1,7 +1,7 @@
 using Magenta.Authentication.Application.Interfaces;
 using Magenta.Authentication.Domain.Entities;
 using Magenta.Authentication.Infrastructure.Events;
-using Magenta.Infrastructure.Configuration;
+using Magenta.Authentication.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

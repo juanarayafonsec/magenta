@@ -19,7 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Magenta.Registration.Domain\Magenta.Registration.Domain.csproj" />
     <ProjectReference Include="..\Magenta.Registration.Application\Magenta.Registration.Application.csproj" />
-    <ProjectReference Include="..\Magenta.Infrastructure\Magenta.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

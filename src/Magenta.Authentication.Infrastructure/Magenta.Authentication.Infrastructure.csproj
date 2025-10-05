@@ -20,7 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Magenta.Authentication.Domain\Magenta.Authentication.Domain.csproj" />
     <ProjectReference Include="..\Magenta.Authentication.Application\Magenta.Authentication.Application.csproj" />
-    <ProjectReference Include="..\Magenta.Infrastructure\Magenta.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

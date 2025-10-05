@@ -59,14 +59,21 @@ dotnet restore
 dotnet build
 ```
 
-4. Run the API:
+4. Run the APIs:
 
 ```bash
-cd src/Magenta.API
+# Terminal 1 - Registration Service
+cd src/Magenta.Registration.API
+dotnet run
+
+# Terminal 2 - Authentication Service  
+cd src/Magenta.Authentication.API
 dotnet run
 ```
 
-5. Open your browser and navigate to `https://localhost:7xxx` (Swagger UI will be available at the root)
+5. Open your browser and navigate to:
+   - Registration API: `https://localhost:7001/swagger`
+   - Authentication API: `https://localhost:7018/swagger`
 
 ### 3. Run Tests
 
@@ -76,8 +83,9 @@ dotnet test
 
 ## API Endpoints
 
-### POST /api/auth/register
+### Registration Service (Port 7001)
 
+#### POST /api/registration/register
 Registers a new user.
 
 **Request Body:**
@@ -85,54 +93,55 @@ Registers a new user.
 {
   "username": "testuser",
   "email": "test@example.com",
-  "password": "password123",
-  "confirmPassword": "password123"
+  "password": "TestPassword123!",
+  "confirmPassword": "TestPassword123!"
 }
 ```
 
-**Response (Success):**
+### Authentication Service (Port 7018)
+
+#### POST /api/auth/login
+Authenticates a user and returns JWT tokens.
+
+**Request Body:**
+```json
+{
+  "usernameOrEmail": "testuser",
+  "password": "TestPassword123!",
+  "rememberMe": false
+}
+```
+
+**Response:**
 ```json
 {
   "success": true,
-  "userId": "user-id",
-  "username": "testuser",
-  "email": "test@example.com",
-  "errors": []
-}
-```
-
-**Response (Error):**
-```json
-{
-  "success": false,
-  "userId": null,
-  "username": null,
-  "email": null,
-  "errors": ["Username is already taken."]
+  "accessToken": "jwt-token",
+  "refreshToken": "refresh-token",
+  "expiresAt": "2024-01-01T00:00:00Z"
 }
 ```
 
 ## Architecture
 
-### Domain Layer
-- `User` entity with ASP.NET Core Identity integration
-- `IUserRepository` interface for data access
+This project uses a **microservices architecture** with event-driven communication:
 
-### Application Layer
-- `UserService` for business logic
-- DTOs for request/response models
-- Validation logic
+### Registration Service
+- **Domain**: User registration entities and business rules
+- **Application**: Registration business logic and DTOs
+- **Infrastructure**: Database access and event publishing
+- **API**: Registration endpoints and Swagger documentation
 
-### Infrastructure Layer
-- `ApplicationDbContext` with Entity Framework Core
-- `UserRepository` implementation
-- PostgreSQL configuration
-- Service registration extensions
+### Authentication Service  
+- **Domain**: Authentication entities and JWT token management
+- **Application**: Authentication business logic and DTOs
+- **Infrastructure**: Database access and event subscription
+- **API**: Authentication endpoints and Swagger documentation
 
-### API Layer
-- `AuthController` with registration endpoint
-- Swagger/OpenAPI configuration
-- Dependency injection setup
+### Event-Driven Communication
+- **RabbitMQ**: Message broker for inter-service communication
+- **Events**: UserCreatedEvent, UserUpdatedEvent, UserDeletedEvent
+- **Resilience**: Services can operate independently with eventual consistency
 
 ## Technologies Used
 

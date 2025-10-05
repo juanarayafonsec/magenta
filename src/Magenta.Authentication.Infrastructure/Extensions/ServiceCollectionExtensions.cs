@@ -2,7 +2,7 @@ using Magenta.Authentication.Application.Interfaces;
 using Magenta.Authentication.Domain.Entities;
 using Magenta.Authentication.Infrastructure.Data;
 using Magenta.Authentication.Infrastructure.Services;
-using Magenta.Infrastructure.Configuration;
+using Magenta.Authentication.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
