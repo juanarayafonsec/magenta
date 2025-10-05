@@ -52,9 +52,10 @@ namespace Magenta.Registration.API.Extensions
             {
                 options.AddPolicy("AllowAll", policy =>
                 {
-                    policy.AllowAnyOrigin()
+                    policy.WithOrigins("https://localhost:3001")
                           .AllowAnyMethod()
-                          .AllowAnyHeader();
+                          .AllowAnyHeader()
+                          .AllowCredentials(); // This is required for withCredentials: true
                 });
             });
         }

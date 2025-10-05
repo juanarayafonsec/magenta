@@ -68,12 +68,12 @@ public static class ServiceCollectionExtensions
             
             // Session timeout
             options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // 30 minutes
-            options.SlidingExpiration = true; // Reset timeout on activity
+            options.SlidingExpiration = false; // No automatic sliding expiration
             
-            // Login/logout paths
-            options.LoginPath = "/api/auth/login";
-            options.LogoutPath = "/api/auth/logout";
-            options.AccessDeniedPath = "/api/auth/access-denied";
+            // Use built-in Identity endpoints
+            options.LoginPath = "/Identity/Account/Login";
+            options.LogoutPath = "/Identity/Account/Logout";
+            options.AccessDeniedPath = "/Identity/Account/AccessDenied";
             
             // Security events
             options.Events.OnSigningIn = async context =>

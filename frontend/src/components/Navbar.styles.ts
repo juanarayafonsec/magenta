@@ -1,8 +1,8 @@
 import { AppBar, Typography, Button } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
-export const StyledAppBar = styled(AppBar)(() => ({
-  backgroundColor: '#1A1A2E',
+export const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
   boxShadow: 'none',
   zIndex: 1200,
   marginLeft: 0,
@@ -12,22 +12,22 @@ export const StyledAppBar = styled(AppBar)(() => ({
   left: 0,
 }))
 
-export const Logo = styled(Typography)(() => ({
+export const Logo = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
   fontSize: '1.5rem',
-  color: '#fff',
+  color: theme.palette.text.primary,
   whiteSpace: 'nowrap',
   overflow: 'visible',
   textOverflow: 'unset',
 }))
 
-export const SignUpButton = styled(Button)(() => ({
-  backgroundColor: '#6A1B9A',
-  color: '#fff',
+export const SignUpButton = styled(Button)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
   textTransform: 'none',
   fontWeight: 600,
   padding: '8px 24px',
   '&:hover': {
-    backgroundColor: '#7B2CBF',
+    backgroundColor: theme.palette.primary.light,
   },
 }))

@@ -1,12 +1,24 @@
 using Magenta.Authentication.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace Magenta.Authentication.API.Extensions;
 public static class ApplicationServiceExtension
 {
     public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Add services to the container
-        services.AddControllers();
+        // Add services to the container with global authorization policy
+        services.AddControllers(options =>
+        {
+            // Create a global authorization policy that requires authentication
+            var policy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+            
+            // Apply the policy globally
+            options.Filters.Add(new AuthorizeFilter(policy));
+        });
+
 
         // Add API Explorer for Swagger
         services.AddEndpointsApiExplorer();

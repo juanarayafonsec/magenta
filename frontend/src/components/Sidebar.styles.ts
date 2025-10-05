@@ -1,9 +1,9 @@
 import { Drawer, Typography, Button, ListItemButton } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
-export const StyledDrawer = styled(Drawer)(() => ({
+export const StyledDrawer = styled(Drawer)(({ theme }) => ({
   '& .MuiDrawer-paper': {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: theme.palette.background.paper,
     width: 280,
     overflow: 'hidden',
     display: 'flex',
@@ -17,55 +17,55 @@ export const StyledDrawer = styled(Drawer)(() => ({
   },
 }))
 
-export const Logo = styled(Typography)(() => ({
+export const Logo = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
   fontSize: '1.5rem',
-  color: '#fff',
+  color: theme.palette.text.primary,
   padding: '16px',
   textAlign: 'center',
   borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
 }))
 
-export const CollapseButton = styled(Button)(() => ({
+export const CollapseButton = styled(Button)(({ theme }) => ({
   minWidth: 'auto',
   padding: '8px',
-  color: '#fff',
+  color: theme.palette.text.primary,
   '&:hover': {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
 }))
 
-export const DownloadButton = styled(Button)(() => ({
-  backgroundColor: '#6A1B9A',
-  color: '#fff',
+export const DownloadButton = styled(Button)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
   textTransform: 'none',
   fontWeight: 600,
   padding: '12px 16px',
   margin: '16px',
   borderRadius: '8px',
   '&:hover': {
-    backgroundColor: '#7B2CBF',
+    backgroundColor: theme.palette.primary.light,
   },
 }))
 
-export const ActiveItem = styled(ListItemButton)(() => ({
-  backgroundColor: 'rgba(106, 27, 154, 0.2)',
-  borderLeft: '3px solid #6A1B9A',
-  color: '#fff !important',
+export const ActiveItem = styled(ListItemButton)(({ theme }) => ({
+  backgroundColor: `${theme.palette.primary.main}20`,
+  borderLeft: `3px solid ${theme.palette.primary.main}`,
+  color: `${theme.palette.text.primary} !important`,
   '&:hover': {
-    backgroundColor: 'rgba(106, 27, 154, 0.3)',
+    backgroundColor: `${theme.palette.primary.main}30`,
   },
   '& .MuiListItemText-primary': {
-    color: '#fff !important',
+    color: `${theme.palette.text.primary} !important`,
   },
 }))
 
-export const InactiveItem = styled(ListItemButton)(() => ({
-  color: '#fff',
+export const InactiveItem = styled(ListItemButton)(({ theme }) => ({
+  color: theme.palette.text.primary,
   '&:hover': {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   '& .MuiListItemText-primary': {
-    color: '#fff !important',
+    color: `${theme.palette.text.primary} !important`,
   },
 }))

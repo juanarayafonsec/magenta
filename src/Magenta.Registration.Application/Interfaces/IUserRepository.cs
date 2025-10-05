@@ -15,3 +15,6 @@ public interface IUserRepository
 
     Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken = default);
 }
+
+
+

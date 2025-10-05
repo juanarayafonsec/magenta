@@ -1,9 +1,9 @@
 import { Drawer, Box, Typography, TextField, Button } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
-export const StyledDrawer = styled(Drawer)(() => ({
+export const StyledDrawer = styled(Drawer)(({ theme }) => ({
   '& .MuiDrawer-paper': {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: theme.palette.background.paper,
     width: 400,
     overflow: 'auto',
     display: 'flex',
@@ -25,19 +25,19 @@ export const Header = styled(Box)(() => ({
   alignItems: 'center',
 }))
 
-export const Title = styled(Typography)(() => ({
+export const Title = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
   fontSize: '1.5rem',
-  color: '#fff',
+  color: theme.palette.text.primary,
 }))
 
-export const Subtitle = styled(Typography)(() => ({
-  color: 'rgba(255, 255, 255, 0.7)',
+export const Subtitle = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.secondary,
   fontSize: '0.9rem',
   marginTop: '8px',
 }))
 
-export const StyledTextField = styled(TextField)(() => ({
+export const StyledTextField = styled(TextField)(({ theme }) => ({
   marginBottom: '16px',
   '& .MuiOutlinedInput-root': {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -49,20 +49,20 @@ export const StyledTextField = styled(TextField)(() => ({
       borderColor: 'rgba(255, 255, 255, 0.3)',
     },
     '&.Mui-focused fieldset': {
-      borderColor: '#6A1B9A',
+      borderColor: theme.palette.primary.main,
     },
   },
   '& .MuiInputLabel-root': {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: theme.palette.text.secondary,
   },
   '& .MuiOutlinedInput-input': {
-    color: '#fff',
+    color: theme.palette.text.primary,
   },
 }))
 
-export const SignInButton = styled(Button)(() => ({
-  backgroundColor: '#6A1B9A',
-  color: '#fff',
+export const SignInButton = styled(Button)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
   textTransform: 'none',
   fontWeight: 600,
   padding: '12px 16px',
@@ -70,32 +70,32 @@ export const SignInButton = styled(Button)(() => ({
   width: '100%',
   marginTop: '16px',
   '&:hover': {
-    backgroundColor: '#7B2CBF',
+    backgroundColor: theme.palette.primary.light,
   },
 }))
 
-export const ForgotPasswordLink = styled(Typography)(() => ({
-  color: '#6A1B9A',
+export const ForgotPasswordLink = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.main,
   textAlign: 'right',
   cursor: 'pointer',
   textDecoration: 'underline',
   fontSize: '0.9rem',
   marginBottom: '16px',
   '&:hover': {
-    color: '#7B2CBF',
+    color: theme.palette.primary.light,
   },
 }))
 
-export const SignUpLink = styled(Typography)(() => ({
-  color: 'rgba(255, 255, 255, 0.7)',
+export const SignUpLink = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.secondary,
   textAlign: 'center',
   marginTop: '16px',
   '& .link': {
-    color: '#6A1B9A',
+    color: theme.palette.primary.main,
     cursor: 'pointer',
     textDecoration: 'underline',
     '&:hover': {
-      color: '#7B2CBF',
+      color: theme.palette.primary.light,
     },
   },
 }))
