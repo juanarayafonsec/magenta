@@ -30,7 +30,6 @@ Magenta/
 - **User Authentication**: Cookie-based secure authentication with login/logout
 - **Content Management**: Basic content management endpoints
 - **CDN with Nginx**: Static file serving with caching, compression, and CORS support
-- **File Management**: Web-based file browser for uploads and file management
 - **Microservices Architecture**: Independent services with event-driven communication
 - **ASP.NET Core Identity**: Built-in authentication and user management
 - **PostgreSQL**: Database provider with Entity Framework Core
@@ -61,12 +60,10 @@ This will start:
 - **PostgreSQL** on port 5432
 - **RabbitMQ** on port 5672 (Management UI on 15672)
 - **Nginx CDN** on port 8080
-- **File Browser** on port 8081
 
 2. Access the services:
    - RabbitMQ Management: http://localhost:15672 (guest/guest)
    - CDN: http://localhost:8080
-   - File Browser: http://localhost:8081
 
 ### 2. Manual Database Setup (Alternative)
 
@@ -114,7 +111,6 @@ dotnet run
    - Authentication API: `https://localhost:7018/swagger`
    - Content API: `https://localhost:5127/swagger`
    - CDN: `http://localhost:8080`
-   - File Browser: `http://localhost:8081`
 
 ### 4. Run Tests
 
@@ -182,15 +178,15 @@ Serves static files with caching, compression, and CORS support.
 - CORS headers for cross-origin requests
 - Health check endpoint: `/healthz`
 
-### File Management (Port 8081)
+### File Management
 
-#### Web-based File Browser
-Provides a web interface for file uploads and management.
+#### Local File Management
+Static files are managed directly in the `nginx/html/` folder.
 
-**Features:**
-- Upload and manage files
-- Browse file structure
-- Admin interface for file operations
+**How to add files:**
+1. Copy files to `nginx/html/` folder
+2. Access them at `http://localhost:8080/filename.ext`
+3. Create subfolders as needed (e.g., `nginx/html/images/`)
 
 ## Architecture
 

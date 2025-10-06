@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magenta CDN</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #e91e63;
+            text-align: center;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .endpoints {
+            background: #f3e5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .upload-link {
+            display: inline-block;
+            background: #e91e63;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .upload-link:hover {
+            background: #c2185b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Magenta CDN</h1>
+        
+        <div class="info">
+            <h3>📁 Static Content Delivery Network</h3>
+            <p>This CDN serves static files with optimized caching, compression, and CORS support.</p>
+        </div>
+
+        <div class="endpoints">
+            <h3>🔗 Available Endpoints</h3>
+            <ul>
+                <li><strong>Health Check:</strong> <code>/healthz</code></li>
+                <li><strong>Static Files:</strong> <code>/filename.ext</code></li>
+                <li><strong>File Manager:</strong> <a href="http://localhost:8081" target="_blank">http://localhost:8081</a></li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <h3>📤 Upload Files</h3>
+            <p>Use the File Browser to upload images and other static content:</p>
+            <a href="http://localhost:8081" class="upload-link" target="_blank">Open File Manager</a>
+        </div>
+
+        <div class="endpoints">
+            <h3>⚡ Features</h3>
+            <ul>
+                <li>Long-term caching (1 year) for static assets</li>
+                <li>Gzip compression for text files</li>
+                <li>CORS headers for cross-origin requests</li>
+                <li>Security headers for safe serving</li>
+                <li>Web-based file management interface</li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <h3>📝 Usage Example</h3>
+            <p>Upload an image via the file manager, then access it at:</p>
+            <code>http://localhost:8080/your-image.jpg</code>
+        </div>
+    </div>
+</body>
+</html>
