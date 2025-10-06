@@ -1,16 +1,24 @@
 # Magenta - Clean Architecture ASP.NET Core Web API
 
-A production-ready C# .NET 9 solution implementing user registration functionality following Clean Architecture principles.
+A production-ready C# .NET 9 microservices solution implementing user registration, authentication, and content management following Clean Architecture principles.
 
 ## Solution Structure
 
 ```
 Magenta/
 ├── src/
-│   ├── Magenta.Domain/          # Domain layer - entities and interfaces
-│   ├── Magenta.Application/     # Application layer - business logic and DTOs
-│   ├── Magenta.Infrastructure/  # Infrastructure layer - data access and external services
-│   └── Magenta.API/            # API layer - controllers and endpoints
+│   ├── Magenta.Registration.API/           # Registration API - user registration endpoints
+│   ├── Magenta.Registration.Application/   # Registration business logic and DTOs
+│   ├── Magenta.Registration.Domain/        # Registration domain entities
+│   ├── Magenta.Registration.Infrastructure/ # Registration data access and external services
+│   ├── Magenta.Authentication.API/         # Authentication API - login/logout endpoints
+│   ├── Magenta.Authentication.Application/ # Authentication business logic and DTOs
+│   ├── Magenta.Authentication.Domain/      # Authentication domain entities
+│   ├── Magenta.Authentication.Infrastructure/ # Authentication data access and external services
+│   ├── Magenta.Content.API/                # Content API - content management endpoints
+│   ├── Magenta.Content.Application/        # Content business logic and DTOs
+│   ├── Magenta.Content.Domain/             # Content domain entities
+│   └── Magenta.Content.Infrastructure/     # Content data access and external services
 ├── test/
 │   └── Magenta.Application.Tests/  # Unit tests
 └── Magenta.sln                 # Solution file
@@ -19,8 +27,14 @@ Magenta/
 ## Features
 
 - **User Registration**: Complete user registration with validation
+- **User Authentication**: Cookie-based secure authentication with login/logout
+- **Content Management**: Basic content management endpoints
+- **CDN with Nginx**: Static file serving with caching, compression, and CORS support
+- **File Management**: Web-based file browser for uploads and file management
+- **Microservices Architecture**: Independent services with event-driven communication
 - **ASP.NET Core Identity**: Built-in authentication and user management
 - **PostgreSQL**: Database provider with Entity Framework Core
+- **RabbitMQ**: Message broker for inter-service communication
 - **Swagger/OpenAPI**: API documentation and testing interface
 - **Clean Architecture**: Separation of concerns with dependency inversion
 - **Unit Tests**: Comprehensive test coverage for business logic
@@ -29,12 +43,32 @@ Magenta/
 ## Prerequisites
 
 - .NET 9 SDK
-- PostgreSQL database
+- Docker and Docker Compose
+- PostgreSQL database (or use Docker)
 - Visual Studio 2022 or VS Code (optional)
 
 ## Setup Instructions
 
-### 1. Database Setup
+### 1. Docker Setup (Recommended)
+
+1. Start all infrastructure services with Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
+This will start:
+- **PostgreSQL** on port 5432
+- **RabbitMQ** on port 5672 (Management UI on 15672)
+- **Nginx CDN** on port 8080
+- **File Browser** on port 8081
+
+2. Access the services:
+   - RabbitMQ Management: http://localhost:15672 (guest/guest)
+   - CDN: http://localhost:8080
+   - File Browser: http://localhost:8081
+
+### 2. Manual Database Setup (Alternative)
 
 1. Install PostgreSQL on your system
 2. Create a database named `MagentaDb` (or update connection string in `appsettings.json`)
@@ -48,7 +82,7 @@ Magenta/
 }
 ```
 
-### 2. Build and Run
+### 3. Build and Run
 
 1. Clone the repository
 2. Navigate to the solution directory
@@ -69,13 +103,20 @@ dotnet run
 # Terminal 2 - Authentication Service  
 cd src/Magenta.Authentication.API
 dotnet run
+
+# Terminal 3 - Content Service
+cd src/Magenta.Content.API
+dotnet run
 ```
 
 5. Open your browser and navigate to:
    - Registration API: `https://localhost:7001/swagger`
    - Authentication API: `https://localhost:7018/swagger`
+   - Content API: `https://localhost:5127/swagger`
+   - CDN: `http://localhost:8080`
+   - File Browser: `http://localhost:8081`
 
-### 3. Run Tests
+### 4. Run Tests
 
 ```bash
 dotnet test
@@ -101,7 +142,7 @@ Registers a new user.
 ### Authentication Service (Port 7018)
 
 #### POST /api/auth/login
-Authenticates a user and returns JWT tokens.
+Authenticates a user and sets secure authentication cookies.
 
 **Request Body:**
 ```json
@@ -116,11 +157,40 @@ Authenticates a user and returns JWT tokens.
 ```json
 {
   "success": true,
-  "accessToken": "jwt-token",
-  "refreshToken": "refresh-token",
-  "expiresAt": "2024-01-01T00:00:00Z"
+  "message": "Login successful"
 }
 ```
+
+### Content Service (Port 5127)
+
+#### GET /api/content
+Gets all content items.
+
+**Response:**
+```json
+200 OK
+```
+
+### CDN Service (Port 8080)
+
+#### Static File Serving
+Serves static files with caching, compression, and CORS support.
+
+**Features:**
+- Long-term caching for static assets (1 year)
+- Gzip compression
+- CORS headers for cross-origin requests
+- Health check endpoint: `/healthz`
+
+### File Management (Port 8081)
+
+#### Web-based File Browser
+Provides a web interface for file uploads and management.
+
+**Features:**
+- Upload and manage files
+- Browse file structure
+- Admin interface for file operations
 
 ## Architecture
 
@@ -133,10 +203,16 @@ This project uses a **microservices architecture** with event-driven communicati
 - **API**: Registration endpoints and Swagger documentation
 
 ### Authentication Service  
-- **Domain**: Authentication entities and JWT token management
+- **Domain**: Authentication entities and cookie-based authentication
 - **Application**: Authentication business logic and DTOs
 - **Infrastructure**: Database access and event subscription
 - **API**: Authentication endpoints and Swagger documentation
+
+### Content Service
+- **Domain**: Content entities and business rules
+- **Application**: Content business logic and DTOs
+- **Infrastructure**: Database access and external services
+- **API**: Content management endpoints and Swagger documentation
 
 ### Event-Driven Communication
 - **RabbitMQ**: Message broker for inter-service communication
