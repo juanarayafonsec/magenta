@@ -1,0 +1,7 @@
+@Magenta.Payment.API_HostAddress = http://localhost:5201
+
+GET {{Magenta.Payment.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
