@@ -6,5 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Magenta.Wallet.Domain\Magenta.Wallet.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
 
