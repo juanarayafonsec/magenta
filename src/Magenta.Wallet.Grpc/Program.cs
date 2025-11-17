@@ -1,6 +1,6 @@
+using Magenta.Wallet.Grpc.Services;
 using Magenta.Wallet.Infrastructure.Data;
 using Magenta.Wallet.Infrastructure.Extensions;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Core;
@@ -18,32 +18,15 @@ builder.Host.UseSerilog();
 
 // Add services
 builder.Services.AddApplicationServices(builder.Configuration);
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
-
-// Cookie authentication (simplified - in production, configure properly with Identity)
-builder.Services.AddAuthentication("Cookies")
-    .AddCookie("Cookies", options =>
-    {
-        options.Cookie.Name = "auth";
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-    });
-
-builder.Services.AddAuthorization();
+builder.Services.AddGrpc();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+// Configure gRPC
+app.MapGrpcService<WalletService>();
 
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
+// Health check
+app.MapGet("/health", () => "OK");
 
 // Ensure database is created
 using (var scope = app.Services.CreateScope())
@@ -79,3 +62,4 @@ public class CorrelationIdEnricher : ILogEventEnricher
         // Correlation ID would be extracted from context in production
     }
 }
+

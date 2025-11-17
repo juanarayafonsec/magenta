@@ -1,0 +1,109 @@
+syntax = "proto3";
+option csharp_namespace = "Magenta.Grp";
+
+service WalletService {
+  rpc ApplyDepositSettlement (ApplyDepositSettlementRequest) returns (OperationResult);
+  rpc ReserveWithdrawal     (ReserveWithdrawalRequest)     returns (OperationResult);
+  rpc FinalizeWithdrawal    (FinalizeWithdrawalRequest)    returns (OperationResult);
+  rpc ReleaseWithdrawal     (ReleaseWithdrawalRequest)     returns (OperationResult);
+  rpc PlaceBet              (PlaceBetRequest)              returns (OperationResult);
+  rpc SettleWin             (SettleWinRequest)             returns (OperationResult);
+  rpc Rollback              (RollbackRequest)              returns (OperationResult);
+  rpc GetBalance            (GetBalanceRequest)            returns (GetBalanceResponse);
+}
+
+message OperationResult {
+  bool ok = 1;
+  string message = 2;
+}
+
+message ApplyDepositSettlementRequest {
+  int64 playerId = 1;
+  string currency = 2;
+  string network = 3;
+  int64 amountMinor = 4;
+  string txHash = 5;
+  string idempotencyKey = 6;
+  string correlationId = 7;
+}
+
+message ReserveWithdrawalRequest {
+  int64 playerId = 1;
+  string currency = 2;
+  string network = 3;
+  int64 amountMinor = 4;
+  string requestId = 5;
+  string correlationId = 6;
+}
+
+message FinalizeWithdrawalRequest {
+  int64 playerId = 1;
+  string currency = 2;
+  string network = 3;
+  int64 amountMinor = 4;
+  int64 feeMinor = 5;
+  string requestId = 6;
+  string txHash = 7;
+  string correlationId = 8;
+}
+
+message ReleaseWithdrawalRequest {
+  int64 playerId = 1;
+  string currency = 2;
+  string network = 3;
+  int64 amountMinor = 4;
+  string requestId = 5;
+  string correlationId = 6;
+}
+
+message PlaceBetRequest {
+  int64 playerId = 1;
+  string currency = 2;
+  string network = 3;
+  int64 amountMinor = 4;
+  string betId = 5;
+  string provider = 6;
+  string roundId = 7;
+  string gameCode = 8;
+  string correlationId = 9;
+}
+
+message SettleWinRequest {
+  int64 playerId = 1;
+  string currency = 2;
+  string network = 3;
+  int64 amountMinor = 4;
+  string winId = 5;
+  string betId = 6;
+  string roundId = 7;
+  string provider = 8;
+  string correlationId = 9;
+}
+
+message RollbackRequest {
+  int64 playerId = 1;
+  string currency = 2;
+  string network = 3;
+  string referenceType = 4;
+  string referenceId = 5;
+  string rollbackId = 6;
+  string reason = 7;
+  string correlationId = 8;
+}
+
+message GetBalanceRequest {
+  int64 playerId = 1;
+}
+
+message BalanceItem {
+  string currency = 1;
+  string network = 2;
+  int64 balanceMinor = 3;
+  int64 reservedMinor = 4;
+  int64 cashableMinor = 5;
+}
+
+message GetBalanceResponse {
+  repeated BalanceItem items = 1;
+}
+
