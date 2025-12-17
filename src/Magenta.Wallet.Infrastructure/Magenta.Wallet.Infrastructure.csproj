@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Magenta.Wallet.Domain\Magenta.Wallet.Domain.csproj" />
+    <ProjectReference Include="..\Magenta.Wallet.Application\Magenta.Wallet.Application.csproj" />
+  </ItemGroup>
+
+</Project>
