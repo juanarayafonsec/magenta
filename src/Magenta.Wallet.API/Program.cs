@@ -1,6 +1,7 @@
 using Magenta.Wallet.Infrastructure.Data;
 using Magenta.Wallet.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,25 +21,31 @@ builder.Services.AddSwaggerGen(c =>
 // Add infrastructure
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// Add authentication (simplified - in production, use proper authentication)
-builder.Services.AddAuthentication("CookieAuthentication")
-    .AddCookie("CookieAuthentication", options =>
+// Add authentication (aligned with Authentication.API)
+builder.Services.AddAuthentication("CookieAuth")
+    .AddCookie("CookieAuth", options =>
     {
-        options.Cookie.Name = "magenta.auth";
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
+        options.Cookie.Name = "MagentaAuth";
+        options.Cookie.HttpOnly = true; // Prevent XSS attacks
+        options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always; // HTTPS only
+        options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict; // CSRF protection
+        options.Cookie.IsEssential = true; // Required for GDPR compliance
+        
+        // Session timeout (aligned with Authentication.API)
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // 30 minutes
+        options.SlidingExpiration = false; // No automatic sliding expiration
     });
 
 builder.Services.AddAuthorization();
 
-// Add CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("SecureCors", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("https://localhost:3000", "https://localhost:3001", "http://localhost:3000", "http://localhost:3001")
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials(); // Required for cookie authentication
     });
 });
 
@@ -57,7 +64,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll");
+app.UseCors("SecureCors");
 
 app.UseAuthentication();
 app.UseAuthorization();

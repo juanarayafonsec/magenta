@@ -1,3 +1,4 @@
+using Magenta.Wallet.Application.DTOs;
 using Magenta.Wallet.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +19,8 @@ public class BalancesController : ControllerBase
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    /// <summary>
-    /// Gets balances for the authenticated player.
-    /// Authentication is done via secure cookie.
-    /// </summary>
     [HttpGet]
-    public async Task<ActionResult<Application.DTOs.BalanceResponse>> GetBalances(CancellationToken cancellationToken)
+    public async Task<ActionResult<BalanceResponse>> GetBalances(CancellationToken cancellationToken)
     {
         try
         {

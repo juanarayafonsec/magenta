@@ -3,17 +3,9 @@ using Magenta.Wallet.Domain.Enums;
 
 namespace Magenta.Wallet.Domain.Services;
 
-/// <summary>
-/// Domain service for ledger operations following SOLID principles.
-/// Single responsibility: validate and create ledger transactions with double-entry rules.
-/// </summary>
+
 public class LedgerService
 {
-    /// <summary>
-    /// Validates that a ledger transaction follows double-entry accounting rules:
-    /// - Has at least 2 postings
-    /// - Sum of DR amounts equals sum of CR amounts
-    /// </summary>
     public static void ValidateTransaction(LedgerTransaction transaction)
     {
         if (transaction.Postings == null || transaction.Postings.Count < 2)
@@ -47,10 +39,6 @@ public class LedgerService
         }
     }
 
-    /// <summary>
-    /// Creates a posting with the specified direction and amount.
-    /// Amount is always stored as positive, direction indicates DR/CR.
-    /// </summary>
     public static LedgerPosting CreatePosting(long accountId, PostingDirection direction, long amountMinor)
     {
         if (amountMinor <= 0)

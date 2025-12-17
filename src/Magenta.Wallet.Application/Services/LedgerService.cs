@@ -3,7 +3,6 @@ using Magenta.Wallet.Application.Events;
 using Magenta.Wallet.Application.Interfaces;
 using Magenta.Wallet.Domain.Entities;
 using Magenta.Wallet.Domain.Enums;
-using Magenta.Wallet.Domain.Services;
 using System.Text.Json;
 
 namespace Magenta.Wallet.Application.Services;
