@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+option csharp_namespace = "Magenta.Wallet.Grpc";
+
+package wallet;
+
+service WalletService {
+  rpc ReserveWithdrawal (ReserveWithdrawalRequest) returns (OperationResult);
+  rpc FinalizeWithdrawalSettled (FinalizeWithdrawalSettledRequest) returns (OperationResult);
+  rpc FinalizeWithdrawalFailed (FinalizeWithdrawalFailedRequest) returns (OperationResult);
+  rpc ApplyDepositSettlement (DepositSettlementRequest) returns (OperationResult);
+  rpc PostBet (BetRequest) returns (OperationResult);
+  rpc PostWin (WinRequest) returns (OperationResult);
+  rpc RollbackTransaction (RollbackRequest) returns (OperationResult);
+}
+
+message ReserveWithdrawalRequest {
+  int64 player_id = 1;
+  int32 currency_network_id = 2;
+  int64 amount_minor = 3;
+  string idempotency_key = 4;
+  string source = 5;
+}
+
+message FinalizeWithdrawalSettledRequest {
+  int64 player_id = 1;
+  int32 currency_network_id = 2;
+  int64 amount_minor = 3;
+  int64 fee_minor = 4;
+  string idempotency_key = 5;
+  string source = 6;
+}
+
+message FinalizeWithdrawalFailedRequest {
+  int64 player_id = 1;
+  int32 currency_network_id = 2;
+  string idempotency_key = 3;
+  string source = 4;
+}
+
+message DepositSettlementRequest {
+  int64 player_id = 1;
+  int32 currency_network_id = 2;
+  int64 amount_minor = 3;
+  string transaction_hash = 4;
+  string source = 5;
+}
+
+message BetRequest {
+  int64 player_id = 1;
+  int32 currency_network_id = 2;
+  int64 amount_minor = 3;
+  string bet_id = 4;
+  string source = 5;
+}
+
+message WinRequest {
+  int64 player_id = 1;
+  int32 currency_network_id = 2;
+  int64 amount_minor = 3;
+  string win_id = 4;
+  string source = 5;
+}
+
+message RollbackRequest {
+  string original_transaction_reference = 1;
+  string rollback_id = 2;
+  string source = 3;
+}
+
+message OperationResult {
+  bool success = 1;
+  string error_message = 2;
+  string transaction_id = 3;
+}

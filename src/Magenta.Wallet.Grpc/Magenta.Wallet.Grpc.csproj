@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Protobuf Include="Protos\wallet.proto" GrpcServices="Server" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Magenta.Wallet.Application\Magenta.Wallet.Application.csproj" />
     <ProjectReference Include="..\Magenta.Wallet.Infrastructure\Magenta.Wallet.Infrastructure.csproj" />
   </ItemGroup>
