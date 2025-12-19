@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option csharp_namespace = "Magenta.Payment.Grpc";
+
+package payment;
+
+service PaymentService {
+  // Payment service methods will be defined here
+  // Example: rpc CreateDepositSession (CreateDepositSessionRequest) returns (CreateDepositSessionResponse);
+}

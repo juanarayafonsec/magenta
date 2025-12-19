@@ -4,4 +4,3 @@ public class Class1
 {
 
 }
-
